@@ -3,6 +3,7 @@ from tkinter import ttk
 from PIL import ImageTk
 from PIL import Image
 from tkinter import messagebox
+import mysql.connector
 
 
 class register:
@@ -30,12 +31,12 @@ class register:
         
 
         #Background image
-        self.bg=ImageTk.PhotoImage(file=r"D:\PBL\imgs\BG1.jpg")
+        self.bg=ImageTk.PhotoImage(file=r"E:\PBL\images\BG1.jpg")
         bglbl=Label(self.root,image=self.bg)
         bglbl.place(x=0,y=0,relwidth=1,relheight=1)
 
         # bg image
-        img=Image.open(r"D:\PBL\imgs\BG1.jpg")
+        img=Image.open(r"E:\PBL\images\BG1.jpg")
         self.photoimg=ImageTk.PhotoImage(img)
 
         bg_lbl=Label(self.root,image=self.photoimg,bd=2,relief=RIDGE)
@@ -190,8 +191,9 @@ class register:
         Button_Frame.place(x=5,y=625,width=628,height=45)
 
         # SAVE BUTT20,height=45
-        save=Button(Button_Frame,text="SAVE",font=("times new roman",10,"bold"),borderwidth=0,width=21,height=2,fg="white",bg="black",activeforeground="black",activebackground="white")
+        save=Button(Button_Frame,text="SAVE",command=self.register_data , font=("times new roman",10,"bold"),borderwidth=0,width=21,height=2,fg="white",bg="black",activeforeground="black",activebackground="white")
         save.grid(row=0,column=0,padx=1,pady=0)
+
 
         # UPDATE BUTTON
 
@@ -205,7 +207,7 @@ class register:
 
         # RESET BUTTON
 
-        reset=Button(Button_Frame,text="RESET",font=("times new roman",10,"bold"),borderwidth=0,width=21,height=2,fg="white",bg="black",activeforeground="black",activebackground="white")
+        reset=Button(Button_Frame,text="RESET",command=self.clear_data ,font=("times new roman",10,"bold"),borderwidth=0,width=21,height=2,fg="white",bg="black",activeforeground="black",activebackground="white")
         reset.grid(row=0,column=3,padx=1,pady=0)
 
         # SEARCH FRAME
@@ -288,9 +290,69 @@ class register:
 
         self.student_table.pack(fill=BOTH,expand=1)
 
+##Conections########################################################################################################################
+    def register_data(self):
+        if self.var_dep.get()=="Select Dept" or self.var_id.get()=="" or self.var_name.get()==""  or self.var_roll.get()==""  or self.var_dob.get()==""  or self.var_email.get()==""  or self.var_phone.get()==""  or self.var_address.get()==""  or self.var_teacher.get()==""  :
+            messagebox.showerror("Error", "All Feilds Are Required.")
+        else :
+            conn = mysql.connector.connect(host="localhost",user="root",password="adhish@mysql",database='myproject')
+            my_cursor = conn.cursor()
+            query = ("select * from register2 where id=%s")
+            value= (self.var_id.get(),)
+            my_cursor.execute(query,value)
+            row = my_cursor.fetchone()
+            if row !=None:
+                messagebox.showerror("Error","Student Enter Correct ID")
+            else:
+                my_cursor.execute("insert into register2 values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",(
+                                                                                                            self.var_id.get(),
+                                                                                                            self.var_dep.get(),
+                                                                                                            self.var_course.get(),  
+                                                                                                            self.var_year.get(),  
+                                                                                                            self.var_sem.get(),  
+                                                                                                            self.var_name.get(),
+                                                                                                            self.var_div.get(),
+                                                                                                            self.var_roll.get(),
+                                                                                                            self.var_gender.get(),  
+                                                                                                            self.var_dob.get(),  
+                                                                                                            self.var_email.get(),  
+                                                                                                            self.var_phone.get(),  
+                                                                                                            self.var_address.get(), 
+                                                                                                            self.var_teacher.get()
+                                                                                                             ))
+            conn.commit()
+            conn.close()
+            self.clear_data()
+            messagebox.showinfo("Success","Entered Data is Saved")    
+
         
 
+    def clear_data(self):
+        self.var_id="" 
+        self.var_name=""
+        self.var_roll=""  
+        self.var_dob=""  
+        self.var_email=""  
+        self.var_phone=""  
+        self.var_address="" 
+        self.var_teacher=""
 
+        
+
+        # self.var_dep=StringVar()
+        # self.var_course=StringVar()
+        # self.var_year=StringVar()
+        # self.var_sem=StringVar()
+        # self.var_id=StringVar()
+        # self.var_name=StringVar()
+        # self.var_div=StringVar()
+        # self.var_roll=StringVar()
+        # self.var_gender=StringVar()
+        # self.var_dob=StringVar()
+        # self.var_email=StringVar()
+        # self.var_phone=StringVar()
+        # self.var_address=StringVar()
+        # self.var_teacher=StringVar()
 
 
 
